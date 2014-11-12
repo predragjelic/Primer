@@ -1,0 +1,28 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+rx_buffer0                                                        0x0500       8
+IdServoGreska                                                     0x0508       1
+paket1                                                            0x0509       1
+paket2                                                            0x050A       1
+paket4                                                            0x050B       1
+paket6                                                            0x050C       1
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+rx_wr_index0                                                      R5           1
+rx_rd_index0                                                      R4           1
+rx_counter0                                                       R7           1
+rx_buffer_overflow0                                               R2.0      1bit
+brzina_servo_H                                                    R6           1
+brzina_servo_L                                                    R9           1
+ugao_servo_H                                                      R8           1
+ugao_servo_L                                                      R11          1
+sum                                                               R10          1
+checksum                                                          R13          1
+greska                                                            R12          1

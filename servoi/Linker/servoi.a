@@ -1,0 +1,747 @@
+;/*****************************************************
+;This program was produced by the
+;CodeWizardAVR V2.05.0 Professional
+;Automatic Program Generator
+;© Copyright 1998-2010 Pavel Haiduc, HP InfoTech s.r.l.
+;http://www.hpinfotech.com
+;
+;Project :
+;Version :
+;Date    : 8.11.2014.
+;Author  : NeVaDa
+;Company :
+;Comments:
+;
+;
+;Chip type               : ATmega128
+;Program type            : Application
+;AVR Core Clock frequency: 11,059000 MHz
+;Memory model            : Small
+;External RAM size       : 0
+;Data Stack size         : 1024
+;*****************************************************/
+;
+;#include <mega128.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x20
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x1C
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x10
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x18
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0x14
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0x1C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x08
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;#include <delay.h>
+;
+;/*********************Servo makroi*******************/
+;#define START 0xFF
+;#define ID1 0x01
+;#define ID2 0x02
+;#define ID3 0x03
+;#define ID4 0x04
+;#define LENGTH 0x07
+;#define INSTR_WRITE 0x03
+;#define ADDRESS 0x1E
+;
+;#ifndef RXB8
+;#define RXB8 1
+;#endif
+;
+;#ifndef TXB8
+;#define TXB8 0
+;#endif
+;
+;#ifndef UPE
+;#define UPE 2
+;#endif
+;
+;#ifndef DOR
+;#define DOR 3
+;#endif
+;
+;#ifndef FE
+;#define FE 4
+;#endif
+;
+;#ifndef UDRE
+;#define UDRE 5
+;#endif
+;
+;#ifndef RXC
+;#define RXC 7
+;
+;#define TXC 6
+;#endif
+;
+;#define FRAMING_ERROR (1<<FE)
+;#define PARITY_ERROR (1<<UPE)
+;#define DATA_OVERRUN (1<<DOR)
+;#define DATA_REGISTER_EMPTY (1<<UDRE)
+;#define RX_COMPLETE (1<<RXC)
+;
+;// USART0 Receiver buffer
+;#define RX_BUFFER_SIZE0 8
+;char rx_buffer0[RX_BUFFER_SIZE0];
+;
+;#if RX_BUFFER_SIZE0 <= 256
+;unsigned char rx_wr_index0,rx_rd_index0,rx_counter0;
+;#else
+;unsigned int rx_wr_index0,rx_rd_index0,rx_counter0;
+;#endif
+;
+;// This flag is set on USART0 Receiver buffer overflow
+;bit rx_buffer_overflow0;
+;
+;// USART0 Receiver interrupt service routine
+;interrupt [USART0_RXC] void usart0_rx_isr(void)
+; 0000 0058 {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0000 0059 char status,data;
+; 0000 005A status=UCSR0A;
+;PCODE: $0000000F VOL: 0
+;PCODE: $00000010 VOL: 0
+;	status -> R17
+;	data -> R16
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+; 0000 005B data=UDR0;
+;PCODE: $00000013 VOL: 0
+;PCODE: $00000014 VOL: 0
+; 0000 005C if ((status & (FRAMING_ERROR | PARITY_ERROR | DATA_OVERRUN))==0)
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+; 0000 005D    {
+; 0000 005E    rx_buffer0[rx_wr_index0++]=data;
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+; 0000 005F #if RX_BUFFER_SIZE0 == 256
+; 0000 0060    // special case for receiver buffer size=256
+; 0000 0061    if (++rx_counter0 == 0)
+; 0000 0062       {
+; 0000 0063 #else
+; 0000 0064    if (rx_wr_index0 == RX_BUFFER_SIZE0) rx_wr_index0=0;
+;PCODE: $0000001D VOL: 0
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+; 0000 0065    if (++rx_counter0 == RX_BUFFER_SIZE0)
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+;PCODE: $00000025 VOL: 0
+; 0000 0066       {
+; 0000 0067       rx_counter0=0;
+;PCODE: $00000026 VOL: 0
+; 0000 0068 #endif
+; 0000 0069       rx_buffer_overflow0=1;
+;PCODE: $00000027 VOL: 0
+;PCODE: $00000028 VOL: 0
+;PCODE: $00000029 VOL: 0
+; 0000 006A       }
+; 0000 006B    }
+;PCODE: $0000002A VOL: 0
+; 0000 006C }
+;PCODE: $0000002B VOL: 0
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+;
+;#ifndef _DEBUG_TERMINAL_IO_
+;// Get a character from the USART0 Receiver buffer
+;#define _ALTERNATE_GETCHAR_
+;#pragma used+
+;char getchar(void)
+; 0000 0073 {
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+; 0000 0074 char data;
+; 0000 0075 while (rx_counter0==0);
+;PCODE: $00000032 VOL: 0
+;	data -> R17
+;PCODE: $00000033 VOL: 0
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+; 0000 0076 data=rx_buffer0[rx_rd_index0++];
+;PCODE: $00000038 VOL: 0
+;PCODE: $00000039 VOL: 0
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+; 0000 0077 #if RX_BUFFER_SIZE0 != 256
+; 0000 0078 if (rx_rd_index0 == RX_BUFFER_SIZE0) rx_rd_index0=0;
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+; 0000 0079 #endif
+; 0000 007A #asm("cli")
+;PCODE: $00000041 VOL: 0
+;PCODE: $00000042 VOL: 0
+	cli
+;PCODE: $00000043 VOL: 0
+; 0000 007B --rx_counter0;
+;PCODE: $00000044 VOL: 0
+; 0000 007C #asm("sei")
+;PCODE: $00000045 VOL: 0
+	sei
+;PCODE: $00000046 VOL: 0
+; 0000 007D return data;
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 0
+;PCODE: $00000049 VOL: 0
+; 0000 007E }
+;PCODE: $0000004A VOL: 0
+;#pragma used-
+;#endif
+;
+;// Standard Input/Output functions
+;#include <stdio.h>
+;
+;
+;/****************Lokalne prom****************/
+;unsigned char brzina_servo_H, brzina_servo_L, ugao_servo_H, ugao_servo_L;
+;unsigned char sum=0;
+;unsigned char checksum=0;
+;char greska;
+;char IdServoGreska;
+;char paket1, paket2, paket4, paket6;
+;
+;/*************FUNKCIJE POTREBNE ZA RAD SERVOA*************/
+;void prijem_paketa (void)
+; 0000 0090 {
+;PCODE: $0000004B VOL: 0
+;PCODE: $0000004C VOL: 0
+; 0000 0091     paket1=getchar();
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+; 0000 0092     paket2=getchar();
+;PCODE: $0000004F VOL: 0
+;PCODE: $00000050 VOL: 0
+; 0000 0093 
+; 0000 0094     IdServoGreska=getchar();
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+; 0000 0095 
+; 0000 0096     paket4=getchar();
+;PCODE: $00000053 VOL: 0
+;PCODE: $00000054 VOL: 0
+; 0000 0097 
+; 0000 0098     greska=getchar();
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+; 0000 0099 
+; 0000 009A     paket6=getchar();
+;PCODE: $00000057 VOL: 0
+;PCODE: $00000058 VOL: 0
+; 0000 009B }
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+;
+;void blokiranje_predaje (void)                        //funkcija koja blokira predaju u trenutku kada
+; 0000 009E {                                                      // posaljemo ceo paket
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+; 0000 009F     while ( !( UCSR0A & (1<<TXC)) )   ;    //kada se posalje ceo paket onda se bit 6 registra UCSRA
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+;PCODE: $00000061 VOL: 0
+;PCODE: $00000062 VOL: 0
+; 0000 00A0     UCSR0B.3=0;                            // setuje na 1, potom se UCSRB.3 stavlja na 0, a to je bit koji
+;PCODE: $00000063 VOL: 0
+;PCODE: $00000064 VOL: 0
+; 0000 00A1     UCSR0A.6=1;                            //iskljuci TxD i taj pin pinovo postaje PD1, a on je inicijalizovan
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+; 0000 00A2 }
+;PCODE: $00000067 VOL: 0
+;PCODE: $00000068 VOL: 0
+;
+;void oslobadjanje_predaje (void)                 //proizvodjaca mikrokontrolera (datasheet 148 strana)
+; 0000 00A5 {
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+; 0000 00A6     UCSR0B.3=1;                            //TxD se opet ukljucuje tako sto se UCSRB.3 bit setuje
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+; 0000 00A7 }
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+;                                                 //proizvodjaca mikrokontrolera (datasheet 148 strana)
+;void oslobadjanje_prijema (void)
+; 0000 00AA {
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+; 0000 00AB     UCSR0B.4=1;                         // bit koji kontrolise oslobadjanje i blokiranje prijema
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 0
+; 0000 00AC }
+;PCODE: $00000073 VOL: 0
+;PCODE: $00000074 VOL: 0
+;
+;void blokiranje_prijema (void)
+; 0000 00AF {
+;PCODE: $00000075 VOL: 0
+;PCODE: $00000076 VOL: 0
+; 0000 00B0     UCSR0B.4=0;
+;PCODE: $00000077 VOL: 0
+;PCODE: $00000078 VOL: 0
+; 0000 00B1 }
+;PCODE: $00000079 VOL: 0
+;PCODE: $0000007A VOL: 0
+;
+;void servoPosition(int pozicija3, int brzina3)
+; 0000 00B4 {
+;PCODE: $0000007B VOL: 0
+;PCODE: $0000007C VOL: 0
+; 0000 00B5     ugao_servo_H=(char)(pozicija3>>8);
+;	pozicija3 -> Y+2
+;	brzina3 -> Y+0
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;PCODE: $0000007F VOL: 0
+; 0000 00B6     ugao_servo_L=(char)(pozicija3&0x00FF);
+;PCODE: $00000080 VOL: 0
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 0
+; 0000 00B7 
+; 0000 00B8     brzina_servo_H=(char)(brzina3>>8);
+;PCODE: $00000083 VOL: 0
+;PCODE: $00000084 VOL: 0
+;PCODE: $00000085 VOL: 0
+; 0000 00B9     brzina_servo_L=(char)(brzina3&0x00FF);
+;PCODE: $00000086 VOL: 0
+;PCODE: $00000087 VOL: 0
+;PCODE: $00000088 VOL: 0
+; 0000 00BA 
+; 0000 00BB     sum=0x28 + ID1 + brzina_servo_H + brzina_servo_L + ugao_servo_H + ugao_servo_L; //0x28=LENGTH + INSTR_WRITE + ADDRESS
+;PCODE: $00000089 VOL: 0
+;PCODE: $0000008A VOL: 0
+;PCODE: $0000008B VOL: 0
+;PCODE: $0000008C VOL: 0
+;PCODE: $0000008D VOL: 0
+;PCODE: $0000008E VOL: 0
+; 0000 00BC     checksum=~sum;
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 0
+;PCODE: $00000091 VOL: 0
+; 0000 00BD 
+; 0000 00BE     blokiranje_prijema();
+;PCODE: $00000092 VOL: 0
+; 0000 00BF     oslobadjanje_predaje();
+;PCODE: $00000093 VOL: 0
+; 0000 00C0 
+; 0000 00C1     putchar(START);
+;PCODE: $00000094 VOL: 0
+;PCODE: $00000095 VOL: 0
+;PCODE: $00000096 VOL: 0
+; 0000 00C2     putchar(START);
+;PCODE: $00000097 VOL: 0
+;PCODE: $00000098 VOL: 0
+;PCODE: $00000099 VOL: 0
+; 0000 00C3     putchar(ID1);
+;PCODE: $0000009A VOL: 0
+;PCODE: $0000009B VOL: 0
+;PCODE: $0000009C VOL: 0
+; 0000 00C4     putchar(LENGTH);
+;PCODE: $0000009D VOL: 0
+;PCODE: $0000009E VOL: 0
+;PCODE: $0000009F VOL: 0
+; 0000 00C5     putchar(INSTR_WRITE);
+;PCODE: $000000A0 VOL: 0
+;PCODE: $000000A1 VOL: 0
+;PCODE: $000000A2 VOL: 0
+; 0000 00C6     putchar(ADDRESS);
+;PCODE: $000000A3 VOL: 0
+;PCODE: $000000A4 VOL: 0
+;PCODE: $000000A5 VOL: 0
+; 0000 00C7     putchar(ugao_servo_L);
+;PCODE: $000000A6 VOL: 0
+;PCODE: $000000A7 VOL: 0
+; 0000 00C8     putchar(ugao_servo_H);
+;PCODE: $000000A8 VOL: 0
+;PCODE: $000000A9 VOL: 0
+; 0000 00C9     putchar(brzina_servo_L);
+;PCODE: $000000AA VOL: 0
+;PCODE: $000000AB VOL: 0
+; 0000 00CA     putchar(brzina_servo_H);
+;PCODE: $000000AC VOL: 0
+;PCODE: $000000AD VOL: 0
+; 0000 00CB     putchar(checksum);
+;PCODE: $000000AE VOL: 0
+;PCODE: $000000AF VOL: 0
+; 0000 00CC 
+; 0000 00CD     blokiranje_predaje();
+;PCODE: $000000B0 VOL: 0
+; 0000 00CE     oslobadjanje_prijema();
+;PCODE: $000000B1 VOL: 0
+; 0000 00CF 
+; 0000 00D0     prijem_paketa();
+;PCODE: $000000B2 VOL: 0
+; 0000 00D1 
+; 0000 00D2     oslobadjanje_predaje();
+;PCODE: $000000B3 VOL: 0
+; 0000 00D3 }
+;PCODE: $000000B4 VOL: 0
+;PCODE: $000000B5 VOL: 0
+;PCODE: $000000B6 VOL: 0
+;
+;
+;void main(void)
+; 0000 00D7 {
+;PCODE: $000000B7 VOL: 0
+; 0000 00D8 
+; 0000 00D9 // Input/Output Ports initialization
+; 0000 00DA // Port A initialization
+; 0000 00DB // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00DC // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00DD PORTA=0x00;
+;PCODE: $000000B8 VOL: 0
+;PCODE: $000000B9 VOL: 0
+; 0000 00DE DDRA=0x00;
+;PCODE: $000000BA VOL: 0
+;PCODE: $000000BB VOL: 0
+; 0000 00DF 
+; 0000 00E0 // Port B initialization
+; 0000 00E1 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00E2 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00E3 PORTB=0x00;
+;PCODE: $000000BC VOL: 0
+;PCODE: $000000BD VOL: 0
+; 0000 00E4 DDRB=0x00;
+;PCODE: $000000BE VOL: 0
+;PCODE: $000000BF VOL: 0
+; 0000 00E5 
+; 0000 00E6 // Port C initialization
+; 0000 00E7 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00E8 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00E9 PORTC=0x00;
+;PCODE: $000000C0 VOL: 0
+;PCODE: $000000C1 VOL: 0
+; 0000 00EA DDRC=0x00;
+;PCODE: $000000C2 VOL: 0
+;PCODE: $000000C3 VOL: 0
+; 0000 00EB 
+; 0000 00EC // Port D initialization
+; 0000 00ED // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00EE // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00EF PORTD=0x00;
+;PCODE: $000000C4 VOL: 0
+;PCODE: $000000C5 VOL: 0
+; 0000 00F0 DDRD=0x00;
+;PCODE: $000000C6 VOL: 0
+;PCODE: $000000C7 VOL: 0
+; 0000 00F1 
+; 0000 00F2 // Port E initialization
+; 0000 00F3 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00F4 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00F5 PORTE=0x00;
+;PCODE: $000000C8 VOL: 0
+;PCODE: $000000C9 VOL: 0
+; 0000 00F6 DDRE=0x00;
+;PCODE: $000000CA VOL: 0
+;PCODE: $000000CB VOL: 0
+; 0000 00F7 
+; 0000 00F8 // Port F initialization
+; 0000 00F9 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 00FA // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T
+; 0000 00FB PORTF=0x00;
+;PCODE: $000000CC VOL: 0
+;PCODE: $000000CD VOL: 0
+; 0000 00FC DDRF=0x00;
+;PCODE: $000000CE VOL: 0
+;PCODE: $000000CF VOL: 0
+; 0000 00FD 
+; 0000 00FE // Port G initialization
+; 0000 00FF // Func4=In Func3=In Func2=In Func1=In Func0=In
+; 0000 0100 // State4=T State3=T State2=T State1=T State0=T
+; 0000 0101 PORTG=0x00;
+;PCODE: $000000D0 VOL: 0
+;PCODE: $000000D1 VOL: 0
+; 0000 0102 DDRG=0x00;
+;PCODE: $000000D2 VOL: 0
+;PCODE: $000000D3 VOL: 0
+; 0000 0103 
+; 0000 0104 // Timer/Counter 0 initialization
+; 0000 0105 // Clock source: System Clock
+; 0000 0106 // Clock value: Timer 0 Stopped
+; 0000 0107 // Mode: Normal top=0xFF
+; 0000 0108 // OC0 output: Disconnected
+; 0000 0109 ASSR=0x00;
+;PCODE: $000000D4 VOL: 0
+;PCODE: $000000D5 VOL: 0
+; 0000 010A TCCR0=0x00;
+;PCODE: $000000D6 VOL: 0
+;PCODE: $000000D7 VOL: 0
+; 0000 010B TCNT0=0x00;
+;PCODE: $000000D8 VOL: 0
+;PCODE: $000000D9 VOL: 0
+; 0000 010C OCR0=0x00;
+;PCODE: $000000DA VOL: 0
+;PCODE: $000000DB VOL: 0
+; 0000 010D 
+; 0000 010E // Timer/Counter 1 initialization
+; 0000 010F // Clock source: System Clock
+; 0000 0110 // Clock value: Timer1 Stopped
+; 0000 0111 // Mode: Normal top=0xFFFF
+; 0000 0112 // OC1A output: Discon.
+; 0000 0113 // OC1B output: Discon.
+; 0000 0114 // OC1C output: Discon.
+; 0000 0115 // Noise Canceler: Off
+; 0000 0116 // Input Capture on Falling Edge
+; 0000 0117 // Timer1 Overflow Interrupt: Off
+; 0000 0118 // Input Capture Interrupt: Off
+; 0000 0119 // Compare A Match Interrupt: Off
+; 0000 011A // Compare B Match Interrupt: Off
+; 0000 011B // Compare C Match Interrupt: Off
+; 0000 011C TCCR1A=0x00;
+;PCODE: $000000DC VOL: 0
+;PCODE: $000000DD VOL: 0
+; 0000 011D TCCR1B=0x00;
+;PCODE: $000000DE VOL: 0
+;PCODE: $000000DF VOL: 0
+; 0000 011E TCNT1H=0x00;
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+; 0000 011F TCNT1L=0x00;
+;PCODE: $000000E2 VOL: 0
+;PCODE: $000000E3 VOL: 0
+; 0000 0120 ICR1H=0x00;
+;PCODE: $000000E4 VOL: 0
+;PCODE: $000000E5 VOL: 0
+; 0000 0121 ICR1L=0x00;
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+; 0000 0122 OCR1AH=0x00;
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 0
+; 0000 0123 OCR1AL=0x00;
+;PCODE: $000000EA VOL: 0
+;PCODE: $000000EB VOL: 0
+; 0000 0124 OCR1BH=0x00;
+;PCODE: $000000EC VOL: 0
+;PCODE: $000000ED VOL: 0
+; 0000 0125 OCR1BL=0x00;
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 0
+; 0000 0126 OCR1CH=0x00;
+;PCODE: $000000F0 VOL: 0
+;PCODE: $000000F1 VOL: 0
+; 0000 0127 OCR1CL=0x00;
+;PCODE: $000000F2 VOL: 0
+;PCODE: $000000F3 VOL: 0
+; 0000 0128 
+; 0000 0129 // Timer/Counter 2 initialization
+; 0000 012A // Clock source: System Clock
+; 0000 012B // Clock value: Timer2 Stopped
+; 0000 012C // Mode: Normal top=0xFF
+; 0000 012D // OC2 output: Disconnected
+; 0000 012E TCCR2=0x00;
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 0
+; 0000 012F TCNT2=0x00;
+;PCODE: $000000F6 VOL: 0
+;PCODE: $000000F7 VOL: 0
+; 0000 0130 OCR2=0x00;
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+; 0000 0131 
+; 0000 0132 // Timer/Counter 3 initialization
+; 0000 0133 // Clock source: System Clock
+; 0000 0134 // Clock value: Timer3 Stopped
+; 0000 0135 // Mode: Normal top=0xFFFF
+; 0000 0136 // OC3A output: Discon.
+; 0000 0137 // OC3B output: Discon.
+; 0000 0138 // OC3C output: Discon.
+; 0000 0139 // Noise Canceler: Off
+; 0000 013A // Input Capture on Falling Edge
+; 0000 013B // Timer3 Overflow Interrupt: Off
+; 0000 013C // Input Capture Interrupt: Off
+; 0000 013D // Compare A Match Interrupt: Off
+; 0000 013E // Compare B Match Interrupt: Off
+; 0000 013F // Compare C Match Interrupt: Off
+; 0000 0140 TCCR3A=0x00;
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 0
+; 0000 0141 TCCR3B=0x00;
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+; 0000 0142 TCNT3H=0x00;
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+; 0000 0143 TCNT3L=0x00;
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 0
+; 0000 0144 ICR3H=0x00;
+;PCODE: $00000102 VOL: 0
+;PCODE: $00000103 VOL: 0
+; 0000 0145 ICR3L=0x00;
+;PCODE: $00000104 VOL: 0
+;PCODE: $00000105 VOL: 0
+; 0000 0146 OCR3AH=0x00;
+;PCODE: $00000106 VOL: 0
+;PCODE: $00000107 VOL: 0
+; 0000 0147 OCR3AL=0x00;
+;PCODE: $00000108 VOL: 0
+;PCODE: $00000109 VOL: 0
+; 0000 0148 OCR3BH=0x00;
+;PCODE: $0000010A VOL: 0
+;PCODE: $0000010B VOL: 0
+; 0000 0149 OCR3BL=0x00;
+;PCODE: $0000010C VOL: 0
+;PCODE: $0000010D VOL: 0
+; 0000 014A OCR3CH=0x00;
+;PCODE: $0000010E VOL: 0
+;PCODE: $0000010F VOL: 0
+; 0000 014B OCR3CL=0x00;
+;PCODE: $00000110 VOL: 0
+;PCODE: $00000111 VOL: 0
+; 0000 014C 
+; 0000 014D // External Interrupt(s) initialization
+; 0000 014E // INT0: Off
+; 0000 014F // INT1: Off
+; 0000 0150 // INT2: Off
+; 0000 0151 // INT3: Off
+; 0000 0152 // INT4: Off
+; 0000 0153 // INT5: Off
+; 0000 0154 // INT6: Off
+; 0000 0155 // INT7: Off
+; 0000 0156 EICRA=0x00;
+;PCODE: $00000112 VOL: 0
+;PCODE: $00000113 VOL: 0
+; 0000 0157 EICRB=0x00;
+;PCODE: $00000114 VOL: 0
+;PCODE: $00000115 VOL: 0
+; 0000 0158 EIMSK=0x00;
+;PCODE: $00000116 VOL: 0
+;PCODE: $00000117 VOL: 0
+; 0000 0159 
+; 0000 015A // Timer(s)/Counter(s) Interrupt(s) initialization
+; 0000 015B TIMSK=0x00;
+;PCODE: $00000118 VOL: 0
+;PCODE: $00000119 VOL: 0
+; 0000 015C 
+; 0000 015D ETIMSK=0x00;
+;PCODE: $0000011A VOL: 0
+;PCODE: $0000011B VOL: 0
+; 0000 015E 
+; 0000 015F // USART0 initialization
+; 0000 0160 // Communication Parameters: 8 Data, 1 Stop, No Parity
+; 0000 0161 // USART0 Receiver: On
+; 0000 0162 // USART0 Transmitter: On
+; 0000 0163 // USART0 Mode: Asynchronous
+; 0000 0164 // USART0 Baud Rate: 115200
+; 0000 0165 UCSR0A=0x00;
+;PCODE: $0000011C VOL: 0
+;PCODE: $0000011D VOL: 0
+; 0000 0166 UCSR0B=0x98;
+;PCODE: $0000011E VOL: 0
+;PCODE: $0000011F VOL: 0
+; 0000 0167 UCSR0C=0x06;
+;PCODE: $00000120 VOL: 0
+;PCODE: $00000121 VOL: 0
+; 0000 0168 UBRR0H=0x00;
+;PCODE: $00000122 VOL: 0
+;PCODE: $00000123 VOL: 0
+; 0000 0169 UBRR0L=0x05;
+;PCODE: $00000124 VOL: 0
+;PCODE: $00000125 VOL: 0
+; 0000 016A 
+; 0000 016B // USART1 initialization
+; 0000 016C // USART1 disabled
+; 0000 016D UCSR1B=0x00;
+;PCODE: $00000126 VOL: 0
+;PCODE: $00000127 VOL: 0
+; 0000 016E 
+; 0000 016F // Analog Comparator initialization
+; 0000 0170 // Analog Comparator: Off
+; 0000 0171 // Analog Comparator Input Capture by Timer/Counter 1: Off
+; 0000 0172 ACSR=0x80;
+;PCODE: $00000128 VOL: 0
+;PCODE: $00000129 VOL: 0
+; 0000 0173 SFIOR=0x00;
+;PCODE: $0000012A VOL: 0
+;PCODE: $0000012B VOL: 0
+; 0000 0174 
+; 0000 0175 // ADC initialization
+; 0000 0176 // ADC disabled
+; 0000 0177 ADCSRA=0x00;
+;PCODE: $0000012C VOL: 0
+;PCODE: $0000012D VOL: 0
+; 0000 0178 
+; 0000 0179 // SPI initialization
+; 0000 017A // SPI disabled
+; 0000 017B SPCR=0x00;
+;PCODE: $0000012E VOL: 0
+;PCODE: $0000012F VOL: 0
+; 0000 017C 
+; 0000 017D // TWI initialization
+; 0000 017E // TWI disabled
+; 0000 017F TWCR=0x00;
+;PCODE: $00000130 VOL: 0
+;PCODE: $00000131 VOL: 0
+; 0000 0180 
+; 0000 0181 // Global enable interrupts
+; 0000 0182 #asm("sei")
+;PCODE: $00000132 VOL: 0
+	sei
+;PCODE: $00000133 VOL: 0
+; 0000 0183 
+; 0000 0184 while (1)
+;PCODE: $00000134 VOL: 0
+; 0000 0185       {
+; 0000 0186            servoPosition(500, 700);
+;PCODE: $00000135 VOL: 0
+;PCODE: $00000136 VOL: 0
+;PCODE: $00000137 VOL: 0
+;PCODE: $00000138 VOL: 0
+;PCODE: $00000139 VOL: 0
+; 0000 0187            delay_ms(3500);
+;PCODE: $0000013A VOL: 0
+;PCODE: $0000013B VOL: 0
+;PCODE: $0000013C VOL: 0
+; 0000 0188 
+; 0000 0189            servoPosition(23, 512);
+;PCODE: $0000013D VOL: 0
+;PCODE: $0000013E VOL: 0
+;PCODE: $0000013F VOL: 0
+;PCODE: $00000140 VOL: 0
+;PCODE: $00000141 VOL: 0
+; 0000 018A            delay_ms(3500);
+;PCODE: $00000142 VOL: 0
+;PCODE: $00000143 VOL: 0
+;PCODE: $00000144 VOL: 0
+; 0000 018B       }
+;PCODE: $00000145 VOL: 0
+;PCODE: $00000146 VOL: 0
+; 0000 018C }
+;PCODE: $00000147 VOL: 0
+;PCODE: $00000148 VOL: 0
+;PCODE: $00000149 VOL: 0
